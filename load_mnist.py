@@ -10,7 +10,6 @@ def load_file(filename):
         train_set, valid_set, test_set = cPickle.load(f)
     return train_set, valid_set, test_set
 
-# Not working - possibly need to reformat data into numpy...
 def show_img(x):
     im = Image.new('L', (28, 28))
     im.putdata(x, scale=256)
@@ -18,7 +17,8 @@ def show_img(x):
 
 def main():
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz')
-    show_img(train_set)
+    show_img(train_set[0][100]) # see example of image
+    print train_set[1][100] # confirm label associated
 
 if __name__ == "__main__":
     main()
