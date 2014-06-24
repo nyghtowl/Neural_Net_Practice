@@ -15,10 +15,19 @@ def show_img(x):
     im.putdata(x, scale=256)
     im.show()
 
+def build_sample(data, size, target):
+    # x is pic pixels and round up or down
+    # y is numeric labels
+    # n sets size of sample
+    x = data[0][data[1]==target][0:size].round()
+    y = data[1][data[1]==target][0:size]
+    return x, y
+
 def main():
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz')
     show_img(train_set[0][100]) # see example of image
     print train_set[1][100] # confirm label associated
+    x, y = build_sample(train_set, 10, 0)
 
 if __name__ == "__main__":
     main()
