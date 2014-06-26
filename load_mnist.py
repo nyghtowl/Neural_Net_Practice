@@ -36,12 +36,12 @@ def pull_sample(data, size, target):
 def build_sample(data):
     x_results, y_results = [], []
     for value in xrange(0,2):
-        x, y = pull_sample(train_set, 10, value)
+        x, y = pull_sample(data, 10, value)
         x_results.append(x)
         y_results.append(y)
 
     x_sample = np.vstack(x_results)
-    y_sample = np.concatinate(y_results)
+    y_sample = np.concatenate(y_results)
 
     result = zip(x_sample, y_sample)
     random.shuffle(result)
@@ -52,8 +52,9 @@ def main():
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz')
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
-    labels, pics = build_sample(train_set)
+    pics, labels = build_sample(train_set)
     return DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
+
 
 
 if __name__ == "__main__":
