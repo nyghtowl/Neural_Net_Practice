@@ -27,20 +27,24 @@ def pull_sample(data, size, target):
     return x, y
 
 def binarize(num):
+    # potentially expand for other numbers
     if num == 0:
         return [1,0]
-    else:
-        return [0,1]
+    return [0,1]
+
+# Alternative to adjust it when have more than 2 labels
+def binarize_label(num):
+    label = [0] * 10
+    label[num] = 1
+    return label
 
 def build_sample(data, size):
     x_results, y_results = [], []
     for value in xrange(0,2):
         x, y = pull_sample(data, size, value)
-        print "y", y
         x_results.append(x)
-        for num in y:
-            y_results.append(binarize(num)) # find better switch
-    print "y_results", y_results
+    
+        y_results.append([binarize_label(num) for num in y.tolist()])
 
     x_sample = np.vstack(x_results)
     y_sample = np.vstack(y_results)
@@ -57,7 +61,9 @@ def main():
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
     pics, labels = build_sample(train_set, size)
-    #return DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
+    labels = np.array(labels)
+    pics = np.array(pics)
+    return DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
 
 
 
