@@ -1,3 +1,4 @@
+
 '''
 Code to load the sample MNIST file
 '''
@@ -7,6 +8,9 @@ import numpy as np
 import Image
 import random
 import time
+from sklearn.metrics import confusion_matrix
+import matplotlib.pylab as plt
+import seaborn
 
 def load_file(filename):
     with gzip.open(filename) as f:
@@ -38,7 +42,7 @@ def binarize_label(num):
     label[num] = 1
     return label
 
-def build_sample(data, size):
+def create_sample(data, size):
     x_results, y_results = [], []
     for value in xrange(0,2):
         x, y = pull_sample(data, size, value)
@@ -49,22 +53,27 @@ def build_sample(data, size):
     x_sample = np.vstack(x_results)
     y_sample = np.vstack(y_results)
 
-    print "y_sample", y_sample
     result = zip(x_sample, y_sample)
     random.shuffle(result)
     return zip(*result)
 
+def build_model(pics, labels, lr=0.0035, epochs=5000):
+    model = DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
+    return model.pretrain(lr=lr, epochs=epochs) # fit model
+
+
 
 def main():
     size = 10
-    train_set, valid_set, test_set = load_file('../mnist.pkl.gz')
+    train_set, valid_set, test_set = load_file('../mnist.pkl.gz') # outputs tuples
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
-    pics, labels = build_sample(train_set, size)
+
+    pics, labels = create_sample(train_set, size)
     labels = np.array(labels)
     pics = np.array(pics)
-    return DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
-
+    dbn = build_model(pics, labels)
+    return dbn
 
 
 if __name__ == "__main__":
