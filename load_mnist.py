@@ -10,6 +10,8 @@ import random
 import time
 from sklearn.metrics import confusion_matrix
 import matplotlib.pylab as plt
+from matplotlib.colors import LinearSegmentedColormap
+from pylab import cm
 import seaborn
 
 def load_file(filename):
@@ -17,12 +19,26 @@ def load_file(filename):
         train_set, valid_set, test_set = cPickle.load(f)
     return train_set, valid_set, test_set
 
+###########################################################
+
+# Explore & Split Data
+
+def eda(df):
+    print "Summary Stats", df.describe()
+    print "Shape", df.shape
+
+    print "# email threads", len(df.thread_id.unique())
+    print "# email threads that meet conditions", len(df[df.target == True].thread_id.unique())
+
+    print "Top 5 rows", df.head()
+    print "Bottom 5 rows", df.tail()
+
 def show_img(x):
     im = Image.new('L', (28, 28))
     im.putdata(x, scale=256)
     im.show()
 
-def pull_sample(data, size, target):
+def split_data(data, size, target):
     # x is pic pixels and round up or down
     # y is numeric labels
     # n sets size of sample
@@ -30,22 +46,16 @@ def pull_sample(data, size, target):
     y = data[1][data[1]==target][0:size]
     return x, y
 
-def binarize(num):
-    # potentially expand for other numbers
-    if num == 0:
-        return [1,0]
-    return [0,1]
-
 # Alternative to adjust it when have more than 2 labels
 def binarize_label(num):
     label = [0] * 10
     label[num] = 1
     return label
 
-def create_sample(data, size):
+def create_data_sample(data, size):
     x_results, y_results = [], []
     for value in xrange(0,2):
-        x, y = pull_sample(data, size, value)
+        x, y = split_data(data, size, value)
         x_results.append(x)
     
         y_results.append([binarize_label(num) for num in y.tolist()])
@@ -57,10 +67,57 @@ def create_sample(data, size):
     random.shuffle(result)
     return zip(*result)
 
+###########################################################
+
+# Model
+
 def build_model(pics, labels, lr=0.0035, epochs=5000):
     model = DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
     return model.pretrain(lr=lr, epochs=epochs) # fit model
 
+
+###########################################################
+
+# Analyze Results
+
+def create_confusion_matrix(y_test, y_pred, cmap=cm.cubehelix_r):
+    cm_labels = [True, False]
+    conf_matrix = confusion_matrix(y_test, y_pred, cm_labels)
+    print 'Neural Net CM:'
+    print conf_matrix
+    print
+    cm_plot = plot_confusion_matrix(conf_matrix, cm_labels, cmap)
+    return conf_matrix
+
+def plot_confusion_matrix(conf_matrix, cm_labels, cmap):
+
+    startcolor = '#cccccc'
+    midcolor = '#08519c'
+    endcolor = '#08306b'
+
+    b_g2 = LinearSegmentedColormap.from_list('B_G2', [startcolor, midcolor, endcolor])
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(conf_matrix, cmap=b_g2)
+    fig.colorbar(cax)
+    plt.title('Neural Net Confusion Matrix \n', fontsize=16)
+
+    ax.set_xticklabels([''] + cm_labels, fontsize=13)
+    ax.set_yticklabels([''] + cm_labels, fontsize=13)
+
+    ax.xaxis.set_ticks_position('none')
+    ax.yaxis.set_ticks_position('none')
+
+    spines_to_remove = ['top', 'right', 'left', 'bottom']
+    # for spine in spines_to_remove:
+    #     ax.spines[spine].set_visible(False)
+
+    plt.xlabel('Predicted', fontsize=14)
+    plt.ylabel('Actual', fontsize=14)
+    #plt.savefig(os.path.join(graph_dir, graph_fn))
+
+    plt.show()
 
 
 def main():
@@ -69,7 +126,7 @@ def main():
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
 
-    pics, labels = create_sample(train_set, size)
+    pics, labels = create_data_sample(train_set, size)
     labels = np.array(labels)
     pics = np.array(pics)
     dbn = build_model(pics, labels)
