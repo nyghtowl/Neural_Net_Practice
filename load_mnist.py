@@ -54,7 +54,7 @@ def binarize_label(num):
 
 def create_data_sample(data, size):
     x_results, y_results = [], []
-    for value in xrange(0,2):
+    for value in xrange(5,8,2):
         x, y = split_data(data, size, value)
         x_results.append(x)
     
@@ -72,13 +72,26 @@ def create_data_sample(data, size):
 # Model
 
 def build_model(pics, labels, lr=0.0035, epochs=5000):
-    model = DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
-    return model.pretrain(lr=lr, epochs=epochs) # fit model
+    labels = np.array(labels)
+    pics = np.array(pics)
 
+    # lr is learning rate - start with .001
+    # epochs is ht enumber iterations to run - start at 1000
+
+    model = DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
+    model.pretrain(lr=lr, epochs=epochs) # feature extraction
+
+    # build/fit model by running logistic regression
+    model.finetune(lr=.001, epochs=epochs) 
+
+    return model
 
 ###########################################################
 
 # Analyze Results
+
+def print_accuracy(model, labels, values):
+    print sum(np.argmax(labels, axis=1) == np.argmax(model.predict(values), axis=1))*1.0/len(labels)
 
 def create_confusion_matrix(y_test, y_pred, cmap=cm.cubehelix_r):
     cm_labels = [True, False]
@@ -110,8 +123,6 @@ def plot_confusion_matrix(conf_matrix, cm_labels, cmap):
     ax.yaxis.set_ticks_position('none')
 
     spines_to_remove = ['top', 'right', 'left', 'bottom']
-    # for spine in spines_to_remove:
-    #     ax.spines[spine].set_visible(False)
 
     plt.xlabel('Predicted', fontsize=14)
     plt.ylabel('Actual', fontsize=14)
@@ -121,15 +132,16 @@ def plot_confusion_matrix(conf_matrix, cm_labels, cmap):
 
 
 def main():
-    size = 10
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz') # outputs tuples
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
 
-    pics, labels = create_data_sample(train_set, size)
-    labels = np.array(labels)
-    pics = np.array(pics)
-    dbn = build_model(pics, labels)
+    train_pics, train_labels = create_data_sample(train_set, 50)
+
+    start = time.time()
+    dbn = build_model(train_pics, train_labels)
+    print "Time to train model:", time.time() - start
+
     return dbn
 
 
