@@ -94,7 +94,7 @@ def print_accuracy(model, labels, values):
     print sum(np.argmax(labels, axis=1) == np.argmax(model.predict(values), axis=1))*1.0/len(labels)
 
 def create_confusion_matrix(y_test, y_pred, cmap=cm.cubehelix_r):
-    cm_labels = [True, False]
+    cm_labels = [5, 7]#[True, False]
     conf_matrix = confusion_matrix(y_test, y_pred, cm_labels)
     print 'Neural Net CM:'
     print conf_matrix
