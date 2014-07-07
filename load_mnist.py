@@ -95,15 +95,15 @@ def print_accuracy(model, labels, values):
 
 def create_confusion_matrix(y_test, y_pred, cmap=cm.cubehelix_r):
     # Change cm_lables to receive input
-    cm_labels = [5, 7]#[True, False]
-    conf_matrix = confusion_matrix(y_test, y_pred, cm_labels)
+    # cm_labels = [True, False]
+    conf_matrix = confusion_matrix(y_test, y_pred)
     print 'Neural Net CM:'
     print conf_matrix
     print
-    cm_plot = plot_confusion_matrix(conf_matrix, cm_labels, cmap)
+    cm_plot = plot_confusion_matrix(conf_matrix, cmap)
     return conf_matrix
 
-def plot_confusion_matrix(conf_matrix, cm_labels, cmap):
+def plot_confusion_matrix(conf_matrix, cmap):
 
     startcolor = '#cccccc'
     midcolor = '#08519c'
@@ -117,8 +117,8 @@ def plot_confusion_matrix(conf_matrix, cm_labels, cmap):
     fig.colorbar(cax)
     plt.title('Neural Net Confusion Matrix \n', fontsize=16)
 
-    ax.set_xticklabels([''] + cm_labels, fontsize=13)
-    ax.set_yticklabels([''] + cm_labels, fontsize=13)
+    # ax.set_xticklabels([''] + cm_labels, fontsize=13)
+    # ax.set_yticklabels([''] + cm_labels, fontsize=13)
 
     ax.xaxis.set_ticks_position('none')
     ax.yaxis.set_ticks_position('none')
