@@ -77,7 +77,7 @@ def show_actual_pred(dbn, labels, values):
 
 def build_model(labels, values, lr=0.0035, epochs=5000):
     labels = np.array(labels)
-    pics = np.array(pics)
+    pics = np.array(values)
 
     # lr is learning rate - start with .001
     # epochs is ht enumber iterations to run - start at 1000
@@ -143,11 +143,13 @@ def main(size=50, pattern=(5,10,2)):
 
     train_pics, train_labels = create_data_sample(train_set, size, pattern)
 
+    test_pics, test_labels = create_data_sample(test_set, size, pattern)
+
     start = time.time()
     dbn = build_model(train_labels, train_pics)
     print "Time to train model:", time.time() - start
-    print_accuracy(dbn, train_labels, train_pics)
-    return dbn, train_labels, train_pics
+    print_accuracy(dbn, test_labels, test_pics)
+    return dbn, test_labels, test_pics
 
 
 if __name__ == "__main__":
