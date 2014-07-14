@@ -75,7 +75,8 @@ def show_actual_pred(dbn, labels, values):
 
 # Model
 
-def build_model(labels, values, lr=0.0035, epochs=5000):
+#lr set at 0.0035 initially
+def build_model(labels, values, lr=0.001, epochs=5000):
     labels = np.array(labels)
     pics = np.array(values)
 
@@ -136,7 +137,7 @@ def plot_confusion_matrix(conf_matrix, cm_labels):
     plt.show()
 
 
-def main(size=50, numbers=[2,4,6]):
+def main(size, numbers):
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz') # outputs tuples
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
@@ -148,8 +149,10 @@ def main(size=50, numbers=[2,4,6]):
     start = time.time()
     dbn = build_model(train_labels, train_pics)
     print "Time to train model:", time.time() - start
+    
     print_accuracy(dbn, test_labels, test_pics)
     create_confusion_matrix(np.argmax(test_labels, axis=1), np.argmax(dbn.predict(test_pics), axis=1), numbers)
+
     return dbn, test_labels, test_pics
 
 
