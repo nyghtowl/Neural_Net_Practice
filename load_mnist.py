@@ -11,7 +11,7 @@ import time
 from sklearn.metrics import confusion_matrix
 import matplotlib.pylab as plt
 from matplotlib.colors import LinearSegmentedColormap
-from pylab import cm
+# from pylab import cm
 import seaborn
 
 def load_file(filename):
@@ -54,7 +54,7 @@ def binarize_label(num):
 
 def create_data_sample(data, size):
     x_results, y_results = [], []
-    for value in xrange(5,8,2):
+    for value in xrange(5,8,2): # adjust this to change numbers trained.
         x, y = split_data(data, size, value)
         x_results.append(x)
     
@@ -93,17 +93,17 @@ def build_model(pics, labels, lr=0.0035, epochs=5000):
 def print_accuracy(model, labels, values):
     print sum(np.argmax(labels, axis=1) == np.argmax(model.predict(values), axis=1))*1.0/len(labels)
 
-def create_confusion_matrix(y_test, y_pred, cmap=cm.cubehelix_r):
+def create_confusion_matrix(y_test, y_pred, cm_labels):
     # Change cm_lables to receive input
     # cm_labels = [True, False]
     conf_matrix = confusion_matrix(y_test, y_pred)
     print 'Neural Net CM:'
     print conf_matrix
     print
-    cm_plot = plot_confusion_matrix(conf_matrix, cmap)
+    cm_plot = plot_confusion_matrix(conf_matrix, cm_labels)
     return conf_matrix
 
-def plot_confusion_matrix(conf_matrix, cmap):
+def plot_confusion_matrix(conf_matrix, cm_labels):
 
     startcolor = '#cccccc'
     midcolor = '#08519c'
@@ -117,8 +117,8 @@ def plot_confusion_matrix(conf_matrix, cmap):
     fig.colorbar(cax)
     plt.title('Neural Net Confusion Matrix \n', fontsize=16)
 
-    # ax.set_xticklabels([''] + cm_labels, fontsize=13)
-    # ax.set_yticklabels([''] + cm_labels, fontsize=13)
+    ax.set_xticklabels([''] + cm_labels, fontsize=13)
+    ax.set_yticklabels([''] + cm_labels, fontsize=13)
 
     ax.xaxis.set_ticks_position('none')
     ax.yaxis.set_ticks_position('none')
