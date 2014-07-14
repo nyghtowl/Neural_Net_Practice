@@ -52,9 +52,9 @@ def binarize_label(num):
     label[num] = 1
     return label
 
-def create_data_sample(data, size, pattern):
+def create_data_sample(data, size, p):
     x_results, y_results = [], []
-    for value in xrange(pattern): # adjust this to change numbers trained.
+    for value in xrange(p[0],p[1],p[2]): # adjust this to change numbers trained.
         x, y = split_data(data, size, value)
         x_results.append(x)
     
@@ -67,15 +67,15 @@ def create_data_sample(data, size, pattern):
     random.shuffle(result)
     return zip(*result)
 
-def show_actual_pred(dbn, labels, pics):
+def show_actual_pred(dbn, labels, values):
     print "Actual:", np.argmax(labels, axis=1)
-    print "Predicted:", np.argmax(dbn.predict(pics), axis=1)
+    print "Predicted:", np.argmax(dbn.predict(values), axis=1)
 
 ###########################################################
 
 # Model
 
-def build_model(pics, labels, lr=0.0035, epochs=5000):
+def build_model(labels, values, lr=0.0035, epochs=5000):
     labels = np.array(labels)
     pics = np.array(pics)
 
@@ -144,10 +144,10 @@ def main(size=50, pattern=(5,10,2)):
     train_pics, train_labels = create_data_sample(train_set, size, pattern)
 
     start = time.time()
-    dbn = build_model(train_pics, train_labels)
+    dbn = build_model(train_labels, train_pics)
     print "Time to train model:", time.time() - start
-
-    return dbn, train_pics, train_labels
+    print_accuracy(dbn, train_labels, train_pics)
+    return dbn, train_labels, train_pics
 
 
 if __name__ == "__main__":
