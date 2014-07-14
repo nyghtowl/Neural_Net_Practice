@@ -52,9 +52,9 @@ def binarize_label(num):
     label[num] = 1
     return label
 
-def create_data_sample(data, size, p):
+def create_data_sample(data, size, numbers):
     x_results, y_results = [], []
-    for value in xrange(p[0],p[1],p[2]): # adjust this to change numbers trained.
+    for value in numbers: # adjust this to change numbers trained.
         x, y = split_data(data, size, value)
         x_results.append(x)
     
@@ -80,7 +80,7 @@ def build_model(labels, values, lr=0.0035, epochs=5000):
     pics = np.array(values)
 
     # lr is learning rate - start with .001
-    # epochs is ht enumber iterations to run - start at 1000
+    # epochs is the number iterations to run - start at 1000
 
     model = DBN.DBN(input=pics, label=labels, n_ins=784, hidden_layer_sizes=[500, 250, 100], n_outs=10, numpy_rng=None)
     model.pretrain(lr=lr, epochs=epochs) # feature extraction
@@ -136,19 +136,20 @@ def plot_confusion_matrix(conf_matrix, cm_labels):
     plt.show()
 
 
-def main(size=50, pattern=(5,10,2)):
+def main(size=50, numbers=[2,4,6]):
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz') # outputs tuples
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
 
-    train_pics, train_labels = create_data_sample(train_set, size, pattern)
+    train_pics, train_labels = create_data_sample(train_set, size, numbers)
 
-    test_pics, test_labels = create_data_sample(test_set, size, pattern)
+    test_pics, test_labels = create_data_sample(test_set, size, numbers)
 
     start = time.time()
     dbn = build_model(train_labels, train_pics)
     print "Time to train model:", time.time() - start
     print_accuracy(dbn, test_labels, test_pics)
+    create_confusion_matrix(np.argmax(test_labels, axis=1), np.argmax(dbn.predict(test_pics), axis=1), numbers)
     return dbn, test_labels, test_pics
 
 
