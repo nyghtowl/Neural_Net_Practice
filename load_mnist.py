@@ -52,9 +52,9 @@ def binarize_label(num):
     label[num] = 1
     return label
 
-def create_data_sample(data, size):
+def create_data_sample(data, size, pattern):
     x_results, y_results = [], []
-    for value in xrange(5,8,2): # adjust this to change numbers trained.
+    for value in xrange(pattern): # adjust this to change numbers trained.
         x, y = split_data(data, size, value)
         x_results.append(x)
     
@@ -66,6 +66,10 @@ def create_data_sample(data, size):
     result = zip(x_sample, y_sample)
     random.shuffle(result)
     return zip(*result)
+
+def show_actual_pred(dbn, labels, pics):
+    print "Actual:", np.argmax(labels, axis=1)
+    print "Predicted:", np.argmax(dbn.predict(pics), axis=1)
 
 ###########################################################
 
@@ -132,18 +136,18 @@ def plot_confusion_matrix(conf_matrix, cm_labels):
     plt.show()
 
 
-def main():
+def main(size=50, pattern=(5,10,2)):
     train_set, valid_set, test_set = load_file('../mnist.pkl.gz') # outputs tuples
     #show_img(train_set[0][100]) # see example of image
     #print train_set[1][100] # confirm label associated
 
-    train_pics, train_labels = create_data_sample(train_set, 50)
+    train_pics, train_labels = create_data_sample(train_set, size, pattern)
 
     start = time.time()
     dbn = build_model(train_pics, train_labels)
     print "Time to train model:", time.time() - start
 
-    return dbn
+    return dbn, train_pics, train_labels
 
 
 if __name__ == "__main__":
